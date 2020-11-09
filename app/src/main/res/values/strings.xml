@@ -6,6 +6,22 @@
     <string name="addNewPlants">Add New Plants</string>
     <string name="settings">Settings</string>
     <string name="seeReminders">See Reminders</string>
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="add_plant">Add Plant</string>
+   <string name="plant_name">Plant Name</string>
+    <string name="water_frequency">Watering Frequency (DAYS)</string>
+    <string name="default_temp">Default Temperature (Celsius)</string>
+    <string name="text_intro_spinner">Living habitat:</string>
+    <string name="text_intro_spinner_sun">Sun exposure level:</string>
+    <string name="text_intro_time">Select the prefered time interval to water your buddy:</string>
+    <string name="text_add_plant_intro">Please add your buddy\'s details</string>
+    <string-array name="plant_indoor_outdoor">
+        <item>Indoor</item>
+        <item>Outdoor</item>
+    </string-array>
+    <string-array name="sun_exposure_level">
+        <item>Low</item>
+        <item>Moderate</item>
+        <item>High</item>
+    </string-array>
+
 </resources>

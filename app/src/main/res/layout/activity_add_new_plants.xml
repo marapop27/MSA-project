@@ -1,20 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".AddNewPlantsActivity">
+    <include
+        android:id="@+id/add_plant_toolbar"
+        layout="@layout/toolbar_with_back_button" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:orientation="vertical">
 
-    <include layout="@layout/toolbar_with_back_button"/>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/addNewPlants"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/add_plant_intro"
+            style="@style/textFromAddPage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_add_plant_intro" />
+
+
+        <EditText
+            android:id="@+id/plant_name_add"
+            style="@style/inputAddPlant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/plant_name"
+            android:inputType="textShortMessage|textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_plant_intro" />
+
+        <EditText
+            android:id="@+id/plant_watering_days_add"
+            style="@style/inputAddPlant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/water_frequency"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/plant_name_add" />
+
+        <TextView
+            android:id="@+id/intro_spinner_hab"
+            style="@style/textFromAddPage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_intro_spinner" />
+
+        <Spinner
+            android:id="@+id/spinner_plant_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <EditText
+            android:id="@+id/env_temp_add"
+            style="@style/inputAddPlant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/default_temp"
+            android:inputType="numberSigned"/>
+
+        <TextView
+            android:id="@+id/intro_spinner_sun"
+            style="@style/textFromAddPage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_intro_spinner_sun" />
+
+        <Spinner
+            android:id="@+id/spinner_sun_exposure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/intro_spinner_sun" />
+
+        <TextView
+            android:id="@+id/intro_select_time"
+            style="@style/textFromAddPage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_intro_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_sun_exposure" />
+
+        <LinearLayout
+            android:id="@+id/start_time_lin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tp_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="00:00"
+                android:textColor="#000"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/bt_start_time"
+                style="@style/PrimaryButton"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:text="Select Start Time " />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/end_time_lin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/start_time_lin">
+
+            <TextView
+                android:id="@+id/tp_end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="00:00"
+                android:textColor="#000"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/bt_end_time"
+                style="@style/PrimaryButton"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="12dp"
+                android:text="Select End Time" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/done_button"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/add_plant"/>
+
+        <TextView
+            android:id="@+id/add_plant_name_check"
+            style="@style/inputAddPlant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textAlignment="center"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/indoor_outdoor_check"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/add_plant_name_check"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/sun_exposure_check"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/indoor_outdoor_check"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+            </LinearLayout>
+
+        </ScrollView>
+</LinearLayout>
