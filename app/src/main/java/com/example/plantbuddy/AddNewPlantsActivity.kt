@@ -69,7 +69,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
     }
 
     private fun addPlantName(view: View){
-        val input_check = findViewById<TextView>(R.id.add_plant_name_check)
+
         val plant_name_add = findViewById<EditText>(R.id.plant_name_add)
         val plant_watering_days_add = findViewById<EditText>(R.id.plant_watering_days_add)
         val env_temp_add=findViewById<EditText>(R.id.env_temp_add)
@@ -77,15 +77,14 @@ class AddNewPlantsActivity : AppCompatActivity() {
         outputMes.append(plant_name_add.text).append("\n")
         outputMes.append(plant_watering_days_add.text).append("\n")
         outputMes.append(env_temp_add.text).append("\n")
-        input_check.text = outputMes
-        input_check.visibility=View.VISIBLE
+       
     }
 
     private fun initializeSpinner(){
-        val indoor_outdoor_check = findViewById<TextView>(R.id.indoor_outdoor_check)
+
         val plantType = resources.getStringArray(R.array.plant_indoor_outdoor)
         val sun_exposure_level = resources.getStringArray(R.array.sun_exposure_level)
-        val sun_exposure_check = findViewById<TextView>(R.id.sun_exposure_check)
+
 
         spinner_habitat = findViewById<Spinner>(R.id.spinner_plant_type)
         spinner_sun = findViewById<Spinner>(R.id.spinner_sun_exposure)
@@ -96,7 +95,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
             spinner_habitat.onItemSelectedListener = object  : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
 
-                    indoor_outdoor_check.text=plantType[position]
+
                 }
                 override fun onNothingSelected(parent: AdapterView<*>) {} }
         }
@@ -106,7 +105,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
             spinner_sun.adapter = adapter
             spinner_sun.onItemSelectedListener = object  : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                    sun_exposure_check.text=sun_exposure_level[position]
+
                 }
                 override fun onNothingSelected(parent: AdapterView<*>) {} }
         }
