@@ -25,6 +25,17 @@
             android:layout_marginBottom="40dp"
             android:layout_marginTop="40dp"
              />
+        <TextView
+            android:id="@+id/userView"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:fontFamily="casual"
+            android:text="not logged in"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center"
+            android:autoSizeTextType="uniform"
+            android:textStyle="bold"
+            />
 
         <Button
             android:id="@+id/buttonMyPlants"
@@ -48,6 +59,20 @@
             android:id="@+id/buttonSettings"
             style="@style/PrimaryButton"
             android:text="@string/settings"
+            />
+
+        <Button
+            android:id="@+id/buttonLoginMain"
+            android:visibility="visible"
+            style="@style/PrimaryButton"
+            android:text="@string/login"
+            />
+
+        <Button
+            android:id="@+id/buttonLogoutMain"
+            android:visibility="visible"
+            style="@style/PrimaryButton"
+            android:text="log out"
             />
 
     </LinearLayout>
