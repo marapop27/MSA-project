@@ -61,12 +61,12 @@
             android:text="@string/settings"
             />
 
-        <Button
-            android:id="@+id/buttonLoginMain"
-            android:visibility="visible"
-            style="@style/PrimaryButton"
-            android:text="@string/login"
-            />
+<!--        <Button-->
+<!--            android:id="@+id/buttonLoginMain"-->
+<!--            android:visibility="visible"-->
+<!--            style="@style/PrimaryButton"-->
+<!--            android:text="@string/login"-->
+<!--            />-->
 
         <Button
             android:id="@+id/buttonLogoutMain"

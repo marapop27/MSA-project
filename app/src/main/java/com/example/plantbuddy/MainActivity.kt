@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var addNewPlantButton: Button
     lateinit var seeRemindersButton: Button
     lateinit var settingsButton: Button
-    lateinit var loginButton: Button
+//    lateinit var loginButton: Button
     lateinit var logoutButton: Button
     lateinit var username: TextView
 //    lateinit var check: TextView
@@ -32,13 +32,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         auth = FirebaseAuth.getInstance()
         super.onCreate(savedInstanceState)
+        val currentUser = auth.currentUser
+        checkIfLoggedIn(currentUser)
         setContentView(R.layout.activity_main)
 
 //        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                    .setAction("Action", null).show()
 //        }
-        initializeViews();
+        initializeViews()
 
         myPlantButton.setOnClickListener {
 //            i++
@@ -62,10 +64,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        loginButton.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
+//        loginButton.setOnClickListener {
+//            val intent = Intent(this, LoginActivity::class.java)
+//            startActivity(intent)
+//        }
 
         logoutButton.setOnClickListener{
             signOut()
@@ -95,6 +97,8 @@ class MainActivity : AppCompatActivity() {
             this@MainActivity, "logout",
             Toast.LENGTH_SHORT
         ).show()
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
     }
 
     private fun updateUI(firebaseUser: FirebaseUser) {
@@ -108,10 +112,17 @@ class MainActivity : AppCompatActivity() {
         addNewPlantButton = findViewById(R.id.buttonAddNewPlants)
         seeRemindersButton = findViewById(R.id.buttonSeeReminders)
         settingsButton = findViewById(R.id.buttonSettings)
-        loginButton = findViewById(R.id.buttonLoginMain)
+//        loginButton = findViewById(R.id.buttonLoginMain)
         logoutButton = findViewById(R.id.buttonLogoutMain)
         username = findViewById(R.id.userView)
 //        check = findViewById(R.id.check)
+    }
+
+    private fun checkIfLoggedIn(user: FirebaseUser?) {
+        if (user == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
 
