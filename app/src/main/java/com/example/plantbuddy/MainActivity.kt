@@ -68,8 +68,9 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         username.text="not logged in"
         val currentUser = auth.currentUser
-            if(currentUser != null)
-                updateUI(currentUser)
+        checkIfLoggedIn(currentUser)
+        if(currentUser != null)
+            updateUI(currentUser)
     }
 
     private fun signOut() {
