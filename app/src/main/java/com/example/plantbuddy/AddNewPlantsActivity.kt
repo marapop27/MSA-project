@@ -5,13 +5,19 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.plantbuddy.model.Plant
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -19,7 +25,15 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_add_new_plants.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.net.URI
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -44,15 +58,19 @@ class AddNewPlantsActivity : AppCompatActivity() {
     lateinit var plantImage:ImageView
     var plantBitmap:Bitmap? = null
     var plantImageUrl:String? = null
+    lateinit var currentPhotoPath: String
 
     lateinit var livingHabitat:String
     lateinit var sunExposureLevel:String
     var startTime="00"
     var endTime="00"
 
+    lateinit var progressDialog:ProgressDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_new_plants)
+        progressDialog = ProgressDialog(this)
         initViews()
 
         var backButton = findViewById<ImageView>(R.id.btn_toolbar_back);
@@ -72,10 +90,9 @@ class AddNewPlantsActivity : AppCompatActivity() {
 
         doneButton = findViewById(R.id.done_button);
         doneButton.setOnClickListener {
-            var database = FirebaseDatabase.getInstance()
-            val reference = database.getReference("plants")
-            val plantId=reference.push().key
-            uploadImageToFirebase(plantBitmap, plantId.toString())
+            lifecycleScope.launch(Dispatchers.IO) {
+                uploadImageToFirebase(plantBitmap)
+            }
         }
 
         plantImage.setOnClickListener(View.OnClickListener {
@@ -87,8 +104,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                plantBitmap = data?.extras?.get("data") as Bitmap
-                plantImage.setImageBitmap(data?.extras?.get("data") as Bitmap)
+                setPic()
             }
             else if (requestCode == REQUEST_PICK_IMAGE) {
                 val uri = data?.getData()
@@ -117,10 +133,65 @@ class AddNewPlantsActivity : AppCompatActivity() {
         openCamera()
     }
 
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+    private fun setPic() {
+        // Get the dimensions of the View
+        val targetW: Int = plantImage.width
+        val targetH: Int = plantImage.height
+
+        val bmOptions = BitmapFactory.Options().apply {
+            // Get the dimensions of the bitmap
+            inJustDecodeBounds = true
+            val photoW: Int = outWidth
+            val photoH: Int = outHeight
+            // Determine how much to scale down the image
+            val scaleFactor: Int = Math.max(1, Math.min(photoW / targetW, photoH / targetH))
+
+            // Decode the image file into a Bitmap sized to fill the View
+            inJustDecodeBounds = false
+            inSampleSize = scaleFactor
+            inPurgeable = true
+        }
+        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
+            plantBitmap = bitmap
+            plantImage.setImageBitmap(bitmap)
+        }
+    }
+
     private fun openCamera() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
-            intent.resolveActivity(packageManager)?.also {
-                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        this,
+                        "com.example.android.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                }
             }
         }
     }
@@ -222,69 +293,57 @@ class AddNewPlantsActivity : AppCompatActivity() {
         )
 
         if (plantId != null) {
-            reference.child(plantId).setValue(plant)
+            reference.child(plantId).setValue(plant).addOnSuccessListener {
+                progressDialog.setMessage(
+                    "${plantName.text}  added!"
+                )
+                progressDialog.setTitle("Success!")
+                progressDialog.setIndeterminateDrawable(ContextCompat.getDrawable(this, android.R.drawable.stat_sys_upload_done))
+                progressDialog.setOnDismissListener {
+                    onBackPressed()
+                }
+            }
         }
-
-        Toast.makeText(applicationContext, "Added Plant", Toast.LENGTH_SHORT).show()
-
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-
-//        Log.i("user", currentUser?.uid)
-//        Log.i("plant",reference.push().key)
-//        Log.i(TAG, plantName.text.toString())
-//        Log.i(TAG,wateringFreq.text.toString())
-//        Log.i(TAG,envTemp.text.toString())
-//        Log.i(TAG,livingHabitat)
-//        Log.i(TAG,sunExposureLevel)
-//        Log.i(TAG, startTime)
-//        Log.i(TAG, endTime)
     }
 
     // UploadImage method
-    private fun uploadImageToFirebase(bitmap: Bitmap?, fileName: String){
-        val storageReference = FirebaseStorage.getInstance().reference
-        val mountainsRef = storageReference.child("plantImages/${fileName}")
-        if (fileName != null) {
+    private suspend fun uploadImageToFirebase(bitmap: Bitmap?){
+        if ("" != null) {
 
-            // Code for showing progressDialog while uploading
-            val progressDialog = ProgressDialog(this)
-            progressDialog.setTitle("Uploading...")
-            progressDialog.show()
-
-            // Defining the child of storageReference
-            val ref: StorageReference = storageReference
-                .child(
-                    "images/"
-                            + UUID.randomUUID().toString()
+            withContext(Dispatchers.Main)
+            {
+                progressDialog.setTitle("Uploading...")
+                progressDialog.setMessage(
+                    "Uploaded 0%"
                 )
+                progressDialog.show()
+            }
+            // Code for showing progressDialog while uploading
+
+            var database = FirebaseDatabase.getInstance()
+            val reference = database.getReference("plants")
+            val fileName=reference.push().key
+            val storageReference = FirebaseStorage.getInstance().reference
+            val ref: StorageReference = storageReference.child("images/" + UUID.randomUUID().toString())
 
             // adding listeners on upload
             // or failure of image
             val baos = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.WEBP, 100, baos)
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 50, baos)
             val data: ByteArray = baos.toByteArray()
             ref.putBytes(data).addOnSuccessListener { // Image uploaded successfully
                 ref.downloadUrl.addOnSuccessListener { task ->
-                            progressDialog.dismiss()
-                            Toast.makeText(
-                                    this@AddNewPlantsActivity,
-                                    "Image Uploaded!!",
-                                    Toast.LENGTH_SHORT
-                                )
-                                .show()
                             val generatedFilePath = task?.toString()
                             plantImageUrl = generatedFilePath
                             addPlant(fileName.toString())
                 }.addOnFailureListener{
+
                     progressDialog.dismiss()
-                        Toast
-                            .makeText(
+                        Toast.makeText(
                                 this@AddNewPlantsActivity,
                                 "Failed to get image url!!",
                                 Toast.LENGTH_SHORT
-                            )
-                            .show()
+                            ).show()
                 }
             }
             .addOnFailureListener { e -> // Error, Image not uploaded
@@ -298,9 +357,6 @@ class AddNewPlantsActivity : AppCompatActivity() {
                     .show()
             }
             .addOnProgressListener { taskSnapshot ->
-
-                    // Progress Listener for loading
-                    // percentage on the dialog box
                     val progress = (100.0
                             * taskSnapshot.bytesTransferred
                             / taskSnapshot.totalByteCount)

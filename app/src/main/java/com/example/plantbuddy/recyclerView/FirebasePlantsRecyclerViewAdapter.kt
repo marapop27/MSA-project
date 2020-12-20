@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.plantbuddy.R
 import com.example.plantbuddy.model.Plant
 import com.firebase.ui.database.FirebaseRecyclerAdapter
@@ -34,6 +35,16 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>)
 
         val dropdown_container: LinearLayout = itemView.findViewById(R.id.dropdown_container)
         val expand_button: ImageView = itemView.findViewById(R.id.expand_activities_button)
+        init {
+            itemView.setOnClickListener {
+                dropdown_container.visibility = if (dropdown_container.visibility == View.VISIBLE)
+                    View.GONE
+                else View.VISIBLE
+                expand_button.visibility = if (expand_button.visibility == View.VISIBLE)
+                    View.GONE
+                else View.VISIBLE
+            }
+        }
 
         fun bind(item: Plant){
             name.text = item.plantName
@@ -51,16 +62,11 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>)
             else
             {
                 coverImage.visibility = View.VISIBLE
-                Picasso.get().load(item.imageUrl).into(coverImage)
-            }
-
-            itemView.setOnClickListener {
-                dropdown_container.visibility = if (dropdown_container.visibility == View.VISIBLE)
-                    View.GONE
-                else View.VISIBLE
-                expand_button.visibility = if (expand_button.visibility == View.VISIBLE)
-                    View.GONE
-                else View.VISIBLE
+                Glide
+                    .with(itemView.context)
+                    .load(item.imageUrl)
+                    .centerCrop()
+                    .into(coverImage);
             }
         }
     }

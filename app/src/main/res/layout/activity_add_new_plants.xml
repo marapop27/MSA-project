@@ -23,9 +23,10 @@
             <ImageView
                 android:id="@+id/iv_add_new_plant_photo"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="280dp"
                 android:layout_marginBottom="10dp"
-                android:src="@android:drawable/ic_menu_camera"/>
+                android:scaleType="centerCrop"
+                android:background="@android:drawable/ic_menu_camera"/>
             <TextView
                 android:id="@+id/add_plant_intro"
                 style="@style/textFromAddPage"
