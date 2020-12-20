@@ -1,5 +1,6 @@
 package com.example.plantbuddy
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -140,7 +141,8 @@ class AddNewPlantsActivity : AppCompatActivity() {
         val reference = database.getReference("plants")
         val plantId=reference.push().key
 
-        val plant = Plant(currentUser?.uid,
+        val plant = Plant(
+            currentUser?.uid,
             plantId,
             plantName.text.toString(),
             wateringFreq.text.toString(),
@@ -154,6 +156,11 @@ class AddNewPlantsActivity : AppCompatActivity() {
         if (plantId != null) {
             reference.child(plantId).setValue(plant)
         }
+
+        Toast.makeText(applicationContext, "Added Plant", Toast.LENGTH_SHORT).show()
+
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
 
 //        Log.i("user", currentUser?.uid)
 //        Log.i("plant",reference.push().key)

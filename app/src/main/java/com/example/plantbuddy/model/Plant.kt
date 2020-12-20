@@ -1,15 +1,17 @@
 package com.example.plantbuddy.model
 
-class Plant {
+class Plant()
+{
     var userId: String? = null
     var plantId: String? = null
     var plantName: String? = null
-    var wateringFreq: String? =null
-    var plantType:String? =null
-    var temperature:String? =null
-    var sunExposure:String?=null
-    var startTime:String?=null
-    var endTime:String?=null
+    var wateringFreq: String? = null
+    var plantType: String? = null
+    var livingHabitat: String? = null
+    var temperature: String? = null
+    var sunExposure: String? = null
+    var startTime: String? = null
+    var endTime: String? = null
 
     constructor(
         userId: String?,
@@ -20,8 +22,8 @@ class Plant {
         temperature: String?,
         sunExposure: String?,
         startTime: String?,
-        endTime: String?
-    ) {
+        endTime: String?) : this()
+    {
         this.userId= userId
         this.plantId= plantId
         this.plantName = plantName
