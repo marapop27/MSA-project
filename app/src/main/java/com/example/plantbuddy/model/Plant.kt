@@ -12,6 +12,7 @@ class Plant()
     var sunExposure: String? = null
     var startTime: String? = null
     var endTime: String? = null
+    var imageUrl: String? = null
 
     constructor(
         userId: String?,
@@ -22,7 +23,8 @@ class Plant()
         temperature: String?,
         sunExposure: String?,
         startTime: String?,
-        endTime: String?) : this()
+        endTime: String?,
+        imageUrl: String?) : this()
     {
         this.userId= userId
         this.plantId= plantId
@@ -33,6 +35,7 @@ class Plant()
         this.sunExposure=sunExposure
         this.startTime=startTime
         this.endTime=endTime
+        this.imageUrl = imageUrl
     }
 
 }

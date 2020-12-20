@@ -145,7 +145,8 @@ class UpdatePlantActivity : AppCompatActivity() {
             livingHabitat,
             sunExposureLevel,
             startTime,
-            endTime
+            endTime,
+            "a"
         )
 
         if (plantId != null) {

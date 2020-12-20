@@ -1,10 +1,13 @@
 package com.example.plantbuddy.recyclerView
 
+import android.media.Image
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.plantbuddy.R
@@ -12,8 +15,11 @@ import com.example.plantbuddy.model.Plant
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseError
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.blog_list_item.view.*
 
 class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>) : FirebaseRecyclerAdapter<Plant, FirebasePlantsRecyclerViewAdapter.FirebasePlantsViewHolder>(options) {
+
 
     class FirebasePlantsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
@@ -24,6 +30,10 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>)
         private val temp: TextView = itemView.findViewById(R.id.default_temp_plant_list)
         private val  habitat: TextView = itemView.findViewById(R.id.living_habitat_plant_list)
         private val sun: TextView = itemView.findViewById(R.id.sun_exposure_plant_list)
+        private val coverImage: ImageView = itemView.findViewById(R.id.iv_plant_list_cover)
+
+        val dropdown_container: LinearLayout = itemView.findViewById(R.id.dropdown_container)
+        val expand_button: ImageView = itemView.findViewById(R.id.expand_activities_button)
 
         fun bind(item: Plant){
             name.text = item.plantName
@@ -33,6 +43,25 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>)
             temp.text = item.temperature
             habitat.text = item.livingHabitat
             sun.text = item.sunExposure
+
+            if (item.imageUrl.isNullOrEmpty())
+            {
+                coverImage.visibility = View.GONE
+            }
+            else
+            {
+                coverImage.visibility = View.VISIBLE
+                Picasso.get().load(item.imageUrl).into(coverImage)
+            }
+
+            itemView.setOnClickListener {
+                dropdown_container.visibility = if (dropdown_container.visibility == View.VISIBLE)
+                    View.GONE
+                else View.VISIBLE
+                expand_button.visibility = if (expand_button.visibility == View.VISIBLE)
+                    View.GONE
+                else View.VISIBLE
+            }
         }
     }
 
