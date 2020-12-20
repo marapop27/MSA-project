@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <include
+        android:id="@+id/add_plant_toolbar"
+        layout="@layout/toolbar_with_back_button" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+
+            <TextView
+                android:id="@+id/add_plant_intro"
+                style="@style/textFromAddPage"
+                android:text="@string/text_update_plant_intro" />
+
+
+            <EditText
+                android:id="@+id/plant_name_add"
+                style="@style/inputAddPlant"
+                android:hint="@string/plant_name"
+                android:inputType="textShortMessage|textPersonName"
+                />
+
+            <EditText
+                android:id="@+id/plant_watering_days_add"
+                style="@style/inputAddPlant"
+                android:hint="@string/water_frequency"
+                android:inputType="number"
+                />
+
+            <EditText
+                android:id="@+id/env_temp_add"
+                style="@style/inputAddPlant"
+                android:hint="@string/default_temp"
+                android:inputType="numberSigned" />
+
+            <TextView
+                android:id="@+id/intro_spinner_hab"
+                style="@style/textFromAddPage"
+                android:text="@string/text_intro_spinner" />
+
+            <Spinner
+                android:id="@+id/spinner_plant_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/intro_spinner_sun"
+                style="@style/textFromAddPage"
+                android:text="@string/text_intro_spinner_sun" />
+
+            <Spinner
+                android:id="@+id/spinner_sun_exposure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/intro_select_time"
+                style="@style/textFromAddPage"
+                android:text="@string/text_intro_time"
+                />
+
+            <LinearLayout
+                android:id="@+id/start_time_lin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tp_start_time"
+                    style="@style/ButtonSeeSelectedTime"
+                    android:text="00:00"
+                    />
+
+                <Button
+                    android:id="@+id/bt_start_time"
+                    style="@style/ButtonSelectTime"
+                    android:text="Select Start Time " />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/end_time_lin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:id="@+id/tp_end_time"
+                    style="@style/ButtonSeeSelectedTime"
+                    android:text="00:00" />
+                <Button
+                    android:id="@+id/bt_end_time"
+                    style="@style/ButtonSelectTime"
+                    android:text="Select End Time" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/done_button"
+                style="@style/ButtonAddPlant"
+                android:text="@string/update_plant" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
