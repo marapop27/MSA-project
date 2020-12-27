@@ -16,7 +16,6 @@ import com.example.plantbuddy.model.Plant
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseError
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.blog_list_item.view.*
 
 class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>) : FirebaseRecyclerAdapter<Plant, FirebasePlantsRecyclerViewAdapter.FirebasePlantsViewHolder>(options) {

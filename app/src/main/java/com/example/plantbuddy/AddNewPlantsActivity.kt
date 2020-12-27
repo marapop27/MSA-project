@@ -2,17 +2,20 @@ package com.example.plantbuddy
 
 import android.Manifest
 import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -26,20 +29,18 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_add_new_plants.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class AddNewPlantsActivity : AppCompatActivity() {
     var TAG = "LogTest"
-    private val REQUEST_PERMISSION = 100
+    private val REQUEST_PERMISSION = 44
     private val REQUEST_IMAGE_CAPTURE = 1
     private val REQUEST_PICK_IMAGE = 2
 
@@ -96,7 +97,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
         }
 
         plantImage.setOnClickListener(View.OnClickListener {
-            checkCameraPermission()
+            showChooseImageDialog()
         })
     }
 
@@ -104,14 +105,14 @@ class AddNewPlantsActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                setPic()
+                setPicFromCamera()
             }
             else if (requestCode == REQUEST_PICK_IMAGE) {
-                val uri = data?.getData()
-                plantImage.setImageURI(uri)
+                setPicFromUri(data?.data)
             }
         }
     }
+
     private fun initViews()
     {
         //TODO: add the rest of inits here
@@ -119,90 +120,6 @@ class AddNewPlantsActivity : AppCompatActivity() {
         plantName = findViewById<EditText>(R.id.plant_name_add)
         wateringFreq = findViewById<EditText>(R.id.plant_watering_days_add)
         envTemp=findViewById<EditText>(R.id.env_temp_add)
-    }
-
-    private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_PERMISSION
-            )
-            return;
-        }
-        openCamera()
-    }
-
-
-    @Throws(IOException::class)
-    private fun createImageFile(): File {
-        // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(
-            "JPEG_${timeStamp}_", /* prefix */
-            ".jpg", /* suffix */
-            storageDir /* directory */
-        ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
-            currentPhotoPath = absolutePath
-        }
-    }
-
-    private fun setPic() {
-        // Get the dimensions of the View
-        val targetW: Int = plantImage.width
-        val targetH: Int = plantImage.height
-
-        val bmOptions = BitmapFactory.Options().apply {
-            // Get the dimensions of the bitmap
-            inJustDecodeBounds = true
-            val photoW: Int = outWidth
-            val photoH: Int = outHeight
-            // Determine how much to scale down the image
-            val scaleFactor: Int = Math.max(1, Math.min(photoW / targetW, photoH / targetH))
-
-            // Decode the image file into a Bitmap sized to fill the View
-            inJustDecodeBounds = false
-            inSampleSize = scaleFactor
-            inPurgeable = true
-        }
-        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
-            plantBitmap = bitmap
-            plantImage.setImageBitmap(bitmap)
-        }
-    }
-
-    private fun openCamera() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            // Ensure that there's a camera activity to handle the intent
-            takePictureIntent.resolveActivity(packageManager)?.also {
-                val photoFile: File? = try {
-                    createImageFile()
-                } catch (ex: IOException) {
-                    null
-                }
-                // Continue only if the File was successfully created
-                photoFile?.also {
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        this,
-                        "com.example.android.fileprovider",
-                        it
-                    )
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-                }
-            }
-        }
-    }
-
-    private fun openGallery() {
-        Intent(Intent.ACTION_GET_CONTENT).also { intent ->
-            intent.type = "image/*"
-            intent.resolveActivity(packageManager)?.also {
-                startActivityForResult(intent, REQUEST_PICK_IMAGE)
-            }
-        }
     }
 
     private fun showStartTimePickerDialog() {
@@ -213,8 +130,8 @@ class AddNewPlantsActivity : AppCompatActivity() {
             override fun onTimeSelected(hourOfDay: Int, minute: Int) {
                 val hourStr = if (hourOfDay < 10) "0${hourOfDay}" else "${hourOfDay}"
                 val minuteStr = if (minute < 10) "0${minute}" else "${minute}"
-                tp_start_time.text = "${hourStr}:${minuteStr}"
-                startTime = tp_start_time.text as String
+                startTime = "${hourStr}:${minuteStr}"
+                tp_start_time.text = startTime
             }
         })
     }
@@ -227,8 +144,8 @@ class AddNewPlantsActivity : AppCompatActivity() {
             override fun onTimeSelected(hourOfDay: Int, minute: Int) {
                 val hourStr = if (hourOfDay < 10) "0${hourOfDay}" else "${hourOfDay}"
                 val minuteStr = if (minute < 10) "0${minute}" else "${minute}"
-                tp_end_time.text = "${hourStr}:${minuteStr}"
-                endTime = tp_end_time.text as String
+                endTime = "${hourStr}:${minuteStr}"
+                tp_end_time.text = endTime
             }
         })
     }
@@ -241,34 +158,34 @@ class AddNewPlantsActivity : AppCompatActivity() {
         spinner_habitat = findViewById<Spinner>(R.id.spinner_plant_type)
         spinner_sun = findViewById<Spinner>(R.id.spinner_sun_exposure)
 
-        if (spinner_habitat != null) {
-            val adapter = ArrayAdapter(this, R.layout.row_spinner_habitat, plantType)
-            spinner_habitat.adapter = adapter
-            spinner_habitat.onItemSelectedListener = object  : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View,
-                    position: Int,
-                    id: Long
-                ) {
-                     livingHabitat = parent.getItemAtPosition(position) as String
-                }
-                override fun onNothingSelected(parent: AdapterView<*>) {} }
+        val habitatAdapter = ArrayAdapter(this, R.layout.row_spinner_habitat, plantType)
+        spinner_habitat.adapter = habitatAdapter
+        spinner_habitat.onItemSelectedListener  = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                livingHabitat = parent?.getItemAtPosition(position) as String
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
         }
 
-        if (spinner_sun != null) {
-            val adapter = ArrayAdapter(this, R.layout.row_spinner_habitat, sun_exposure_level)
-            spinner_sun.adapter = adapter
-            spinner_sun.onItemSelectedListener = object  : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View,
-                    position: Int,
-                    id: Long
-                ) {
-                    sunExposureLevel = parent.getItemAtPosition(position) as String
-                }
-                override fun onNothingSelected(parent: AdapterView<*>) {} }
+        val sunAdapter = ArrayAdapter(this, R.layout.row_spinner_habitat, sun_exposure_level)
+        spinner_sun.adapter = sunAdapter
+        spinner_sun.onItemSelectedListener = object  : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                sunExposureLevel = parent?.getItemAtPosition(position) as String
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
@@ -298,7 +215,12 @@ class AddNewPlantsActivity : AppCompatActivity() {
                     "${plantName.text}  added!"
                 )
                 progressDialog.setTitle("Success!")
-                progressDialog.setIndeterminateDrawable(ContextCompat.getDrawable(this, android.R.drawable.stat_sys_upload_done))
+                progressDialog.setIndeterminateDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        android.R.drawable.stat_sys_upload_done
+                    )
+                )
                 progressDialog.setOnDismissListener {
                     onBackPressed()
                 }
@@ -306,46 +228,173 @@ class AddNewPlantsActivity : AppCompatActivity() {
         }
     }
 
-    // UploadImage method
-    private suspend fun uploadImageToFirebase(bitmap: Bitmap?){
-        if ("" != null) {
+    //region upload image from camera and gallery
 
-            withContext(Dispatchers.Main)
-            {
-                progressDialog.setTitle("Uploading...")
-                progressDialog.setMessage(
-                    "Uploaded 0%"
-                )
-                progressDialog.show()
+    private fun checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_PERMISSION
+            )
+            return;
+        }
+        openCamera()
+    }
+
+    private fun showChooseImageDialog()
+    {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        val options = arrayOf("Take a photo", "Upload from Gallery")
+        builder.setItems(options, object : DialogInterface.OnClickListener {
+            override fun onClick(dialog: DialogInterface?, which: Int) {
+                if (which == 0) {
+                    checkCameraPermission()
+                    return;
+                }
+                openGallery();
             }
-            // Code for showing progressDialog while uploading
+        })
 
-            var database = FirebaseDatabase.getInstance()
-            val reference = database.getReference("plants")
-            val fileName=reference.push().key
-            val storageReference = FirebaseStorage.getInstance().reference
-            val ref: StorageReference = storageReference.child("images/" + UUID.randomUUID().toString())
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+    @Throws(IOException::class)
+    private fun createTempImageFileForCamera(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
 
-            // adding listeners on upload
-            // or failure of image
-            val baos = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, 50, baos)
-            val data: ByteArray = baos.toByteArray()
-            ref.putBytes(data).addOnSuccessListener { // Image uploaded successfully
-                ref.downloadUrl.addOnSuccessListener { task ->
-                            val generatedFilePath = task?.toString()
-                            plantImageUrl = generatedFilePath
-                            addPlant(fileName.toString())
-                }.addOnFailureListener{
-
-                    progressDialog.dismiss()
-                        Toast.makeText(
-                                this@AddNewPlantsActivity,
-                                "Failed to get image url!!",
-                                Toast.LENGTH_SHORT
-                            ).show()
+    private fun setPicFromUri(uri:Uri?)
+    {
+        try {
+            uri?.also {
+                if(Build.VERSION.SDK_INT < 28) {
+                    plantBitmap = MediaStore.Images.Media.getBitmap(
+                        this.contentResolver,
+                        uri
+                    )
+                    plantImage.setImageBitmap(plantBitmap)
+                } else {
+                    val source = ImageDecoder.createSource(this.contentResolver, uri)
+                    plantBitmap = ImageDecoder.decodeBitmap(source)
+                    plantImage.setImageBitmap(plantBitmap)
                 }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun setPicFromCamera() {
+        // Get the dimensions of the View
+        val targetW: Int = plantImage.width
+        val targetH: Int = plantImage.height
+
+        val bmOptions = BitmapFactory.Options().apply {
+            // Get the dimensions of the bitmap
+            inJustDecodeBounds = true
+            val photoW: Int = outWidth
+            val photoH: Int = outHeight
+            // Determine how much to scale down the image
+            val scaleFactor: Int = Math.max(1, Math.min(photoW / targetW, photoH / targetH))
+
+            // Decode the image file into a Bitmap sized to fill the View
+            inJustDecodeBounds = false
+            inSampleSize = scaleFactor
+            inPurgeable = true
+        }
+        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
+            plantBitmap = bitmap
+            plantImage.setImageBitmap(bitmap)
+        }
+
+    }
+
+    private fun openCamera() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                val photoFile: File? = try {
+                    createTempImageFileForCamera()
+                } catch (ex: IOException) {
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        this,
+                        "com.example.android.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                }
+            }
+        }
+    }
+
+    private fun openGallery() {
+        Intent(Intent.ACTION_GET_CONTENT).also { intent ->
+            intent.type = "image/*"
+            intent.resolveActivity(packageManager)?.also {
+                startActivityForResult(intent, REQUEST_PICK_IMAGE)
+            }
+        }
+    }
+
+    //endregion
+
+    // UploadImage method
+    private suspend fun uploadImageToFirebase(bitmap: Bitmap?){
+        withContext(Dispatchers.Main)
+        {
+            progressDialog.setTitle("Uploading...")
+            progressDialog.setMessage(
+                "Uploaded 0%"
+            )
+            progressDialog.show()
+        }
+        // Code for showing progressDialog while uploading
+
+        var database = FirebaseDatabase.getInstance()
+        val reference = database.getReference("plants")
+        ///File name is plant id
+        val fileName= reference.push().key
+        val storageReference = FirebaseStorage.getInstance().reference
+        val ref: StorageReference = storageReference.child(
+            "images/" + UUID.randomUUID().toString()
+        )
+
+        // adding listeners on upload
+        // or failure of image
+        val baos = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, 50, baos)
+        val data: ByteArray = baos.toByteArray()
+        ref.putBytes(data).addOnSuccessListener { // Image uploaded successfully
+            ref.downloadUrl.addOnSuccessListener { task ->
+                val generatedFilePath = task?.toString()
+                plantImageUrl = generatedFilePath
+                addPlant(fileName.toString())
+            }.addOnFailureListener{
+
+                progressDialog.dismiss()
+                Toast.makeText(
+                    this@AddNewPlantsActivity,
+                    "Failed to get image url!!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
             .addOnFailureListener { e -> // Error, Image not uploaded
                 progressDialog.dismiss()
                 Toast
@@ -357,14 +406,13 @@ class AddNewPlantsActivity : AppCompatActivity() {
                     .show()
             }
             .addOnProgressListener { taskSnapshot ->
-                    val progress = (100.0
-                            * taskSnapshot.bytesTransferred
-                            / taskSnapshot.totalByteCount)
-                    progressDialog.setMessage(
-                        "Uploaded "
-                                + progress.toInt() + "%"
-                    )
-                }
-        }
+                val progress = (100.0
+                        * taskSnapshot.bytesTransferred
+                        / taskSnapshot.totalByteCount)
+                progressDialog.setMessage(
+                    "Uploaded "
+                            + progress.toInt() + "%"
+                )
+            }
     }
 }

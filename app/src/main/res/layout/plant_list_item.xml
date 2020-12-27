@@ -25,18 +25,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="0dp"
+            android:textStyle="bold"
+            android:textSize="18sp"
             android:layout_margin="0dp"/>
             <TextView
+                android:id="@+id/watering_freq_plant_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/watering_freq_plant_list"
                 android:textColor="#000"
                 android:textSize="19sp"
                 />
             <TextView
+                android:id="@+id/start_time_plant_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/start_time_plant_list"
                 android:textColor="#000"
                 android:textSize="19sp"
                 />
@@ -44,9 +46,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/end_time_plant_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/end_time_plant_list"
                     android:textSize="15sp"
                     android:layout_marginTop="10dp"
                     android:layout_toStartOf="@+id/expand_activities_button"
