@@ -259,6 +259,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
         val dialog: AlertDialog = builder.create()
         dialog.show()
     }
+
     @Throws(IOException::class)
     private fun createTempImageFileForCamera(): File {
         // Create an image file name

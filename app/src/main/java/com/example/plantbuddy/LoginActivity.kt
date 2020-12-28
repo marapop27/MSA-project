@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.plantbuddy.helpers.showErrorSnackbar
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -23,8 +24,10 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
         initializeViews()
+
+        email_text.setText("andrada@gmail.com")
+        password_text.setText("andrada")
 
         singUpButton.setOnClickListener {
             val intent = Intent(this, SignupActivity::class.java)
@@ -32,11 +35,17 @@ class LoginActivity : AppCompatActivity() {
         }
 
         loginButton.setOnClickListener{
+            if(email_text.text.isEmpty() || password_text.text.isEmpty())
+            {
+                showErrorSnackbar(findViewById(R.id.coordinatorLayout), "Username and password cannot be empty")
+                return@setOnClickListener;
+            }
             loginUser(email_text.getText().toString().trim(), password_text.getText().toString().trim())
         }
     }
 
     fun loginUser(email: String, password: String){
+
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this,
                 OnCompleteListener<AuthResult?> { task ->
@@ -48,10 +57,7 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("TAG", "createUserWithEmail:failure", task.exception)
-                        Toast.makeText(
-                            this@LoginActivity, "Login failed failed.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showErrorSnackbar(findViewById(R.id.coordinatorLayout), "Username and password incorrect")
                     }
                 })
     }

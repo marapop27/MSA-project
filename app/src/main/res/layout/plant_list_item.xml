@@ -10,7 +10,10 @@
     android:layout_marginRight="10dp"
     android:layout_marginTop="10dp"
     app:cardPreventCornerOverlap="false">
-    <LinearLayout
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
@@ -85,4 +88,15 @@
                     />
             </LinearLayout>
     </LinearLayout>
+        <ImageButton
+            android:id="@+id/ibtn_more_menu"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:tint="@color/primary_resources"
+            android:src="@drawable/ic_menu_vertical"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="12dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/more_menu" />
+    </RelativeLayout>
 </androidx.cardview.widget.CardView>

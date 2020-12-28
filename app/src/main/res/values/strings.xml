@@ -17,6 +17,7 @@
     <string name="text_add_plant_intro">Please add your buddy\'s details</string>
     <string name="text_update_plant_intro">Please update your buddy\'s details</string>
     <string name="login">Log in</string>
+    <string name="more_menu">more menu</string>
     <string-array name="plant_indoor_outdoor">
         <item>Indoor</item>
         <item>Outdoor</item>

@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.plantbuddy.helpers.showErrorSnackbar
+import com.example.plantbuddy.helpers.showMessageSnackbar
 import com.example.plantbuddy.model.Plant
 import com.example.plantbuddy.recyclerView.FirebasePlantsRecyclerViewAdapter
 import com.example.plantbuddy.recyclerView.TopSpacingItemDecoration
@@ -14,7 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_my_plants.*
 
-class MyPlantsActivity : AppCompatActivity() {
+class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.Interaction {
 
     private lateinit var firebasePlantsAdapter: FirebasePlantsRecyclerViewAdapter
     private lateinit var database: DatabaseReference
@@ -67,13 +70,20 @@ class MyPlantsActivity : AppCompatActivity() {
             FirebaseRecyclerOptions.Builder<Plant>()
                 .setQuery(plantReference, Plant::class.java)
                 .build()
-        firebasePlantsAdapter = FirebasePlantsRecyclerViewAdapter(options)
+        firebasePlantsAdapter = FirebasePlantsRecyclerViewAdapter(options, this)
 
         recycler_view.apply {
             layoutManager = LinearLayoutManager(this@MyPlantsActivity)
             val topSpacingDecoration = TopSpacingItemDecoration(30)
             addItemDecoration(topSpacingDecoration)
             adapter = firebasePlantsAdapter
+        }
+    }
+
+    override fun onDeletePlant(plant: Plant) {
+        val rootRef = FirebaseDatabase.getInstance().reference
+        rootRef.child("plants").child(plant.plantId.toString()).removeValue().addOnSuccessListener {
+            showMessageSnackbar(findViewById<CoordinatorLayout>(R.id.coordinatorLayout), "${plant.plantName} was deleted!")
         }
     }
 }
