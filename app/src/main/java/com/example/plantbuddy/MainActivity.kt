@@ -12,6 +12,7 @@ import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.example.plantbuddy.core.UserCore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.ktx.Firebase
@@ -24,19 +25,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var settingsButton: Button
     lateinit var logoutButton: Button
     lateinit var username: TextView
-    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        auth = FirebaseAuth.getInstance()
         super.onCreate(savedInstanceState)
-        val currentUser = auth.currentUser
-        checkIfLoggedIn(currentUser)
         setContentView(R.layout.activity_main)
 
-//        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
-//        }
         initializeViews()
 
         myPlantButton.setOnClickListener {
@@ -66,15 +59,11 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onResume(){
         super.onResume()
-        username.text="not logged in"
-        val currentUser = auth.currentUser
-        checkIfLoggedIn(currentUser)
-        if(currentUser != null)
-            updateUI(currentUser)
+        setUsername()
     }
 
     private fun signOut() {
-        auth.signOut()
+        UserCore.signOut()
 
         Toast.makeText(
             this@MainActivity, "logout",
@@ -84,8 +73,11 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun updateUI(firebaseUser: FirebaseUser) {
-        username.text=firebaseUser.getEmail();
+    private fun setUsername() {
+        if(UserCore.checkIfLoggedIn())
+            username.text=UserCore.user?.email;
+        else
+            username.text="not logged in"
     }
 
     private fun initializeViews()
@@ -98,12 +90,7 @@ class MainActivity : AppCompatActivity() {
         username = findViewById(R.id.userView)
     }
 
-    private fun checkIfLoggedIn(user: FirebaseUser?) {
-        if (user == null) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
-    }
+
 }
 
 
