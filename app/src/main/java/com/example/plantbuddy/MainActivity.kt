@@ -1,5 +1,8 @@
 package com.example.plantbuddy
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -13,9 +16,11 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.example.plantbuddy.core.UserCore
+import com.example.plantbuddy.receivers.ReminderReceiver
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -96,8 +101,6 @@ class MainActivity : AppCompatActivity() {
         logoutButton = findViewById(R.id.buttonLogoutMain)
         username = findViewById(R.id.userView)
     }
-
-
 }
 
 

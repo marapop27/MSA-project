@@ -22,6 +22,7 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
     {
         fun onDeletePlant(plant:Plant)
         fun onEditPlant(plant:Plant)
+        fun onSetReminder(plant:Plant)
         fun onDataChanged()
     }
 
@@ -92,13 +93,14 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
         private fun createMenuDialog()
         {
             val builder: AlertDialog.Builder = AlertDialog.Builder(itemView.context)
-            val options = arrayOf("Delete ${item.plantName}", "Edit ${item.plantName}")
+            val options = arrayOf("Delete ${item.plantName}", "Edit ${item.plantName}", "Set Reminder")
             builder.setItems(options, object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
                     when(which)
                     {
                         0 -> interaction.onDeletePlant(item)
                         1 -> interaction.onEditPlant(item)
+                        2 -> interaction.onSetReminder(item)
                     }
                 }
             })

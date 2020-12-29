@@ -25,6 +25,8 @@
     <string name="getting_your_buddy_s">Getting your buddy\'s</string>
     <string name="welcome">Welcome</string>
     <string name="getWeather">Weather</string>
+    <string name="needs_to_be_watered">needs to be watered</string>
+    <string name="your_buddy">Your buddy</string>
     <string-array name="plant_indoor_outdoor">
         <item>Indoor</item>
         <item>Outdoor</item>
