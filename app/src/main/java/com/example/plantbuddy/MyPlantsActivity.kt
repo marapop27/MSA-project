@@ -86,4 +86,10 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
             showMessageSnackbar(findViewById<CoordinatorLayout>(R.id.coordinatorLayout), "${plant.plantName} was deleted!")
         }
     }
+
+    override fun onEditPlant(plant: Plant) {
+        val intent = Intent(this, AddNewPlantsActivity :: class.java)
+        intent.putExtra("plant", plant)
+        startActivity(intent)
+    }
 }

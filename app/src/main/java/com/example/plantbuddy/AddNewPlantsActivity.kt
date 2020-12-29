@@ -21,7 +21,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.plantbuddy.model.Plant
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -47,8 +49,9 @@ class AddNewPlantsActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
 
-    lateinit var startTimePicker: TimePickerHelper
-    lateinit var endTimePicker: TimePickerHelper
+    private var plantForEdit:Plant? = null
+
+    lateinit var timePicker: TimePickerHelper
     lateinit var doneButton: Button
     lateinit var spinner_habitat: Spinner
     lateinit var spinner_sun: Spinner
@@ -61,38 +64,65 @@ class AddNewPlantsActivity : AppCompatActivity() {
     var plantImageUrl:String? = null
     lateinit var currentPhotoPath: String
 
-    lateinit var livingHabitat:String
-    lateinit var sunExposureLevel:String
-    var startTime="00"
-    var endTime="00"
+    var plantHabitat:Int = 0
+    var sunExposureLevel:Int = 0
+    var startTime="00:00"
+    var endTime="00:00"
+    var initialStartHour: Int = 0;
+    var initialEndHour: Int = 0;
+    var initialStartMin: Int = 0;
+    var initialEndMin: Int = 0;
+
+    private lateinit var plantTypeList: Array<String>
+    private lateinit var sunExposureLevelList: Array<String>
 
     lateinit var progressDialog:ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_new_plants)
+
+        plantTypeList = resources.getStringArray(R.array.plant_indoor_outdoor)
+        sunExposureLevelList = resources.getStringArray(R.array.sun_exposure_level)
         progressDialog = ProgressDialog(this)
         initViews()
+        initializeSpinner()
+
+        plantForEdit = intent?.getParcelableExtra<Plant>("plant")
+        initPlantForEdit(plantForEdit)
+        initDefaultTimeIfNeeded();
 
         var backButton = findViewById<ImageView>(R.id.btn_toolbar_back);
         backButton.setOnClickListener {
             onBackPressed();
         }
 
-        initializeSpinner()
-        startTimePicker = TimePickerHelper(this, false, false)
+        timePicker = TimePickerHelper(this, false, false)
         bt_start_time.setOnClickListener {
-            showStartTimePickerDialog()
-        }
-        endTimePicker = TimePickerHelper(this, false, false)
-        bt_end_time.setOnClickListener {
-            showEndTimePickerDialog()
+            timePicker.showDialog(initialStartHour, initialStartMin, object : TimePickerHelper.Callback{
+                override fun onTimeSelected(hourOfDay: Int, minute: Int) {
+                    initialStartHour = hourOfDay
+                    initialStartMin = minute
+                    startTime = getFormattedTime(hourOfDay, minute)
+                    tp_start_time.text = startTime
+                }
+            })
         }
 
-        doneButton = findViewById(R.id.done_button);
+        bt_end_time.setOnClickListener {
+            timePicker.showDialog(initialEndHour, initialEndMin, object : TimePickerHelper.Callback{
+                override fun onTimeSelected(hourOfDay: Int, minute: Int) {
+                    initialEndHour = hourOfDay
+                    initialEndMin = minute
+                    endTime = getFormattedTime(hourOfDay, minute)
+                    tp_end_time.text = endTime
+                }
+            })
+        }
+
         doneButton.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
-                uploadImageToFirebase(plantBitmap)
+                addOrUpdatePlantInFirebase()
             }
         }
 
@@ -115,50 +145,69 @@ class AddNewPlantsActivity : AppCompatActivity() {
 
     private fun initViews()
     {
-        //TODO: add the rest of inits here
         plantImage = findViewById(R.id.iv_add_new_plant_photo)
         plantName = findViewById<EditText>(R.id.plant_name_add)
         wateringFreq = findViewById<EditText>(R.id.plant_watering_days_add)
         envTemp=findViewById<EditText>(R.id.env_temp_add)
+        doneButton = findViewById(R.id.done_button);
+        spinner_habitat = findViewById<Spinner>(R.id.spinner_plant_type)
+        spinner_sun = findViewById<Spinner>(R.id.spinner_sun_exposure)
     }
 
-    private fun showStartTimePickerDialog() {
+    private fun initDefaultTimeIfNeeded()
+    {
+        if(plantForEdit != null)
+        {
+            return
+        }
         val cal = Calendar.getInstance()
-        val h = cal.get(Calendar.HOUR_OF_DAY)
-        val m = cal.get(Calendar.MINUTE)
-        startTimePicker.showDialog(h, m, object : TimePickerHelper.Callback {
-            override fun onTimeSelected(hourOfDay: Int, minute: Int) {
-                val hourStr = if (hourOfDay < 10) "0${hourOfDay}" else "${hourOfDay}"
-                val minuteStr = if (minute < 10) "0${minute}" else "${minute}"
-                startTime = "${hourStr}:${minuteStr}"
-                tp_start_time.text = startTime
-            }
-        })
+        initialStartHour = cal.get(Calendar.HOUR_OF_DAY)
+        initialStartMin =  cal.get(Calendar.MINUTE)
+        cal.add(Calendar.MINUTE, 30)
+        initialEndHour = cal.get(Calendar.HOUR_OF_DAY)
+        initialEndMin = cal.get(Calendar.MINUTE)
+    }
+    private fun initPlantForEdit(plant:Plant?)
+    {
+        if(plant == null)
+        {
+            return;
+        }
+        Glide.with(this).load(plant.imageUrl).centerCrop().into(plantImage);
+        plantName.text = plant.plantName
+        wateringFreq.text = plant.wateringFreq
+        envTemp.text = plant.wateringFreq
+        spinner_habitat.setSelection(plant.livingHabitat)
+        plantImageUrl = plant.imageUrl
+
+        val cal = Calendar.getInstance()
+        initialStartHour = plant.startTime?.substring(0, 2)?.toInt() ?: cal.get(Calendar.HOUR_OF_DAY)
+        initialStartMin = plant.startTime?.substring(3, 5)?.toInt() ?: cal.get(Calendar.MINUTE)
+        startTime = getFormattedTime(initialStartHour, initialStartMin)
+
+        cal.add(Calendar.MINUTE, 30)
+        initialEndHour = plant.endTime?.substring(0, 2)?.toInt() ?: cal.get(Calendar.HOUR_OF_DAY)
+        initialEndMin = plant.endTime?.substring(3, 5)?.toInt() ?: cal.get(Calendar.MINUTE)
+        endTime = getFormattedTime(initialEndHour, initialEndMin)
+
+        tp_start_time.text = startTime
+        tp_end_time.text = endTime
+
+        doneButton.setText(R.string.update_plant)
     }
 
-    private fun showEndTimePickerDialog() {
-        val cal = Calendar.getInstance()
-        val h = cal.get(Calendar.HOUR_OF_DAY)
-        val m = cal.get(Calendar.MINUTE)
-        endTimePicker.showDialog(h, m, object : TimePickerHelper.Callback {
-            override fun onTimeSelected(hourOfDay: Int, minute: Int) {
-                val hourStr = if (hourOfDay < 10) "0${hourOfDay}" else "${hourOfDay}"
-                val minuteStr = if (minute < 10) "0${minute}" else "${minute}"
-                endTime = "${hourStr}:${minuteStr}"
-                tp_end_time.text = endTime
-            }
-        })
+    private fun getFormattedTime(hourOfDay:Int, minute:Int): String
+    {
+        val hourStr = if (hourOfDay < 10) "0${hourOfDay}" else "${hourOfDay}"
+        val minuteStr = if (minute < 10) "0${minute}" else "${minute}"
+        return "${hourStr}:${minuteStr}"
     }
 
     private fun initializeSpinner(){
 
-        val plantType = resources.getStringArray(R.array.plant_indoor_outdoor)
-        val sun_exposure_level = resources.getStringArray(R.array.sun_exposure_level)
 
-        spinner_habitat = findViewById<Spinner>(R.id.spinner_plant_type)
-        spinner_sun = findViewById<Spinner>(R.id.spinner_sun_exposure)
 
-        val habitatAdapter = ArrayAdapter(this, R.layout.row_spinner_habitat, plantType)
+        val habitatAdapter = ArrayAdapter(this, R.layout.row_spinner_habitat, plantTypeList)
         spinner_habitat.adapter = habitatAdapter
         spinner_habitat.onItemSelectedListener  = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(
@@ -167,14 +216,14 @@ class AddNewPlantsActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                livingHabitat = parent?.getItemAtPosition(position) as String
+                plantHabitat = position
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
 
-        val sunAdapter = ArrayAdapter(this, R.layout.row_spinner_habitat, sun_exposure_level)
+        val sunAdapter = ArrayAdapter(this, R.layout.row_spinner_habitat, sunExposureLevelList)
         spinner_sun.adapter = sunAdapter
         spinner_sun.onItemSelectedListener = object  : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -183,7 +232,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                sunExposureLevel = parent?.getItemAtPosition(position) as String
+                sunExposureLevel = position
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -201,8 +250,9 @@ class AddNewPlantsActivity : AppCompatActivity() {
             plantId,
             plantName.text.toString(),
             wateringFreq.text.toString(),
+            "type",
             envTemp.text.toString(),
-            livingHabitat,
+            plantHabitat,
             sunExposureLevel,
             startTime,
             endTime,
@@ -212,7 +262,9 @@ class AddNewPlantsActivity : AppCompatActivity() {
         if (plantId != null) {
             reference.child(plantId).setValue(plant).addOnSuccessListener {
                 progressDialog.setMessage(
-                    "${plantName.text}  added!"
+                    if(plantForEdit == null)
+                        "${plantName.text}  added!"
+                    else "${plantName.text}  saved!"
                 )
                 progressDialog.setTitle("Success!")
                 progressDialog.setIndeterminateDrawable(
@@ -288,7 +340,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
                 } else {
                     val source = ImageDecoder.createSource(this.contentResolver, uri)
                     plantBitmap = ImageDecoder.decodeBitmap(source)
-                    plantImage.setImageBitmap(plantBitmap)
+                    Glide.with(this).load(plantBitmap).centerCrop().into(plantImage);
                 }
             }
         } catch (e: Exception) {
@@ -316,9 +368,8 @@ class AddNewPlantsActivity : AppCompatActivity() {
         }
         BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
             plantBitmap = bitmap
-            plantImage.setImageBitmap(bitmap)
+            Glide.with(this).load(plantBitmap).centerCrop().into(plantImage);
         }
-
     }
 
     private fun openCamera() {
@@ -356,7 +407,49 @@ class AddNewPlantsActivity : AppCompatActivity() {
     //endregion
 
     // UploadImage method
-    private suspend fun uploadImageToFirebase(bitmap: Bitmap?){
+
+    private suspend fun addOrUpdatePlantInFirebase()
+    {
+        val database = FirebaseDatabase.getInstance()
+        val reference = database.getReference("plants")
+        val storageReference = FirebaseStorage.getInstance().reference
+        val ref: StorageReference = storageReference.child(
+            "images/" + UUID.randomUUID().toString()
+        )
+        var plantId:String? = "";
+
+        if (plantForEdit == null)
+        {
+            plantId = reference.push().key
+        }
+        else
+        {
+            plantId = plantForEdit?.plantId
+        }
+
+        if(plantId == null)
+        {
+            //TODO: Error Message
+            return;
+        }
+        if(plantBitmap == null)
+        {
+            withContext(Dispatchers.Main)
+            {
+                progressDialog.setTitle("Saving...")
+                progressDialog.show()
+            }
+            addPlant(plantId)
+            return;
+        }
+        uploadImageToFirebase(plantBitmap, plantId, ref, OnSuccessListener { fileUri ->
+            val generatedFilePath = fileUri?.toString()
+            plantImageUrl = generatedFilePath
+            addPlant(plantId)
+        })
+    }
+
+    private suspend fun uploadImageToFirebase(bitmap: Bitmap?, fileName:String, storageReference:StorageReference, onSuccessListener: OnSuccessListener<Uri>){
         withContext(Dispatchers.Main)
         {
             progressDialog.setTitle("Uploading...")
@@ -367,27 +460,14 @@ class AddNewPlantsActivity : AppCompatActivity() {
         }
         // Code for showing progressDialog while uploading
 
-        var database = FirebaseDatabase.getInstance()
-        val reference = database.getReference("plants")
-        ///File name is plant id
-        val fileName= reference.push().key
-        val storageReference = FirebaseStorage.getInstance().reference
-        val ref: StorageReference = storageReference.child(
-            "images/" + UUID.randomUUID().toString()
-        )
-
         // adding listeners on upload
         // or failure of image
         val baos = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 50, baos)
         val data: ByteArray = baos.toByteArray()
-        ref.putBytes(data).addOnSuccessListener { // Image uploaded successfully
-            ref.downloadUrl.addOnSuccessListener { task ->
-                val generatedFilePath = task?.toString()
-                plantImageUrl = generatedFilePath
-                addPlant(fileName.toString())
-            }.addOnFailureListener{
-
+        storageReference.putBytes(data).addOnSuccessListener { // Image uploaded successfully
+            storageReference.downloadUrl.addOnSuccessListener(onSuccessListener)
+                .addOnFailureListener{
                 progressDialog.dismiss()
                 Toast.makeText(
                     this@AddNewPlantsActivity,
@@ -396,7 +476,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
                 ).show()
             }
         }
-            .addOnFailureListener { e -> // Error, Image not uploaded
+        .addOnFailureListener { e -> // Error, Image not uploaded
                 progressDialog.dismiss()
                 Toast
                     .makeText(
@@ -405,8 +485,8 @@ class AddNewPlantsActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     )
                     .show()
-            }
-            .addOnProgressListener { taskSnapshot ->
+        }
+        .addOnProgressListener { taskSnapshot ->
                 val progress = (100.0
                         * taskSnapshot.bytesTransferred
                         / taskSnapshot.totalByteCount)

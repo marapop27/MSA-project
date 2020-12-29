@@ -25,6 +25,7 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
     interface Interaction
     {
         fun onDeletePlant(plant:Plant)
+        fun onEditPlant(plant:Plant)
     }
 
     class FirebasePlantsViewHolder(itemView: View, val interaction: Interaction) : RecyclerView.ViewHolder(itemView)
@@ -41,6 +42,9 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
 
         private lateinit var item:Plant
         private lateinit var dialog: AlertDialog
+
+        val plantTypeList = itemView.context.resources.getStringArray(R.array.plant_indoor_outdoor)
+        val sunExposureLevelList = itemView.context.resources.getStringArray(R.array.sun_exposure_level)
 
         val dropdown_container: LinearLayout = itemView.findViewById(R.id.dropdown_container)
         val expand_button: ImageView = itemView.findViewById(R.id.expand_activities_button)
@@ -63,9 +67,9 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
             wateringFreq.text = item.wateringFreq
             startTime.text = item.startTime
             endTime.text = item.endTime
-            temp.text = item.temperature
-            habitat.text = item.livingHabitat
-            sun.text = item.sunExposure
+            temp.text = "${item.temperature} \u2103"
+            habitat.text = plantTypeList[item.livingHabitat]
+            sun.text = sunExposureLevelList[item.sunExposure]
 
             if (item.imageUrl.isNullOrEmpty())
             {
@@ -89,12 +93,13 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
         private fun createMenuDialog()
         {
             val builder: AlertDialog.Builder = AlertDialog.Builder(itemView.context)
-            val options = arrayOf("Delete ${item.plantName}")
+            val options = arrayOf("Delete ${item.plantName}", "Edit ${item.plantName}")
             builder.setItems(options, object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
-                    if (which == 0) {
-                        interaction.onDeletePlant(item)
-                        return;
+                    when(which)
+                    {
+                        0 -> interaction.onDeletePlant(item)
+                        1 -> interaction.onEditPlant(item)
                     }
                 }
             })

@@ -13,24 +13,25 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:orientation="vertical">
         <ImageView
             android:id="@+id/iv_plant_list_cover"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"/>
-        <TextView
-            android:id="@+id/plant_name_plant_list"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="0dp"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:layout_margin="0dp"/>
+            android:padding="10dp"
+            android:layout_below="@id/iv_plant_list_cover"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/plant_name_plant_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="0dp"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_margin="0dp"/>
             <TextView
                 android:id="@+id/watering_freq_plant_list"
                 android:layout_width="match_parent"
@@ -66,28 +67,28 @@
                     />
             </RelativeLayout>
             <LinearLayout
-                android:id="@+id/dropdown_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:orientation="vertical">
-                <TextView
+                    android:id="@+id/dropdown_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/default_temp_plant_list"
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/living_habitat_plant_list"
-                    />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/sun_exposure_plant_list"
-                    />
-            </LinearLayout>
-    </LinearLayout>
+                    android:visibility="gone"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/default_temp_plant_list"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/living_habitat_plant_list"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/sun_exposure_plant_list"
+                        />
+                </LinearLayout>
+        </LinearLayout>
         <ImageButton
             android:id="@+id/ibtn_more_menu"
             android:layout_width="16dp"

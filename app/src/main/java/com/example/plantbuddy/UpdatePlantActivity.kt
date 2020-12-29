@@ -25,8 +25,8 @@ class UpdatePlantActivity : AppCompatActivity() {
     lateinit var wateringFreq : TextView
     lateinit var envTemp: TextView
 
-    lateinit var livingHabitat:String
-    lateinit var sunExposureLevel:String
+    var livingHabitat:Int = 0
+    var sunExposureLevel:Int = 0
     var startTime="00"
     var endTime="00"
 
@@ -109,7 +109,7 @@ class UpdatePlantActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    livingHabitat = parent.getItemAtPosition(position) as String
+                    livingHabitat = position
                 }
                 override fun onNothingSelected(parent: AdapterView<*>) {} }
         }
@@ -124,7 +124,7 @@ class UpdatePlantActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    sunExposureLevel = parent.getItemAtPosition(position) as String
+                    sunExposureLevel = position
                 }
                 override fun onNothingSelected(parent: AdapterView<*>) {} }
         }
@@ -137,10 +137,12 @@ class UpdatePlantActivity : AppCompatActivity() {
         val reference = database.getReference("plants")
         val plantId=reference.push().key
 
-        val plant = Plant(currentUser?.uid,
+        val plant = Plant(
+            currentUser?.uid,
             plantId,
             plantName.text.toString(),
             wateringFreq.text.toString(),
+            "plantType",
             envTemp.text.toString(),
             livingHabitat,
             sunExposureLevel,
