@@ -24,6 +24,7 @@
     <string name="register">Register</string>
     <string name="getting_your_buddy_s">Getting your buddy\'s</string>
     <string name="welcome">Welcome</string>
+    <string name="getWeather">Weather</string>
     <string-array name="plant_indoor_outdoor">
         <item>Indoor</item>
         <item>Outdoor</item>
