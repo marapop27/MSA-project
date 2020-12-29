@@ -4,9 +4,7 @@ import android.R.attr
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
@@ -33,12 +31,24 @@ class SignupActivity : AppCompatActivity() {
             createAccount(email_text.getText().toString().trim(), password_text.getText().toString().trim())
 
         }
+        setToolbar()
     }
 
     override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser: FirebaseUser? = auth.getCurrentUser()
+    }
+
+    private fun setToolbar()
+    {
+        val backButton = findViewById<ImageView>(R.id.btn_toolbar_back);
+        backButton.setOnClickListener {
+            onBackPressed();
+        }
+
+        val title = findViewById<TextView>(R.id.tv_toolbar_title)
+        title.setText(R.string.register)
     }
 
     private fun createAccount(email: String, password: String){
