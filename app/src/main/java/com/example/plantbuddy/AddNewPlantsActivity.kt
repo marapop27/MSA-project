@@ -336,7 +336,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
                         this.contentResolver,
                         uri
                     )
-                    plantImage.setImageBitmap(plantBitmap)
+                    Glide.with(this).load(plantBitmap).centerCrop().into(plantImage);
                 } else {
                     val source = ImageDecoder.createSource(this.contentResolver, uri)
                     plantBitmap = ImageDecoder.decodeBitmap(source)

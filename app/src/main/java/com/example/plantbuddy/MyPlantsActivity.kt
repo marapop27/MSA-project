@@ -3,7 +3,9 @@ package com.example.plantbuddy
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +25,6 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_plants)
@@ -33,7 +34,6 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
             onBackPressed();
         }
 
-//        deletePlant("-MOx5YqnsoJVYY2o8Tn0")
         initRecyclerView()
     }
 
@@ -45,17 +45,6 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
     override fun onPause() {
         super.onPause()
         firebasePlantsAdapter.stopListening()
-    }
-
-    private fun updatePlant() {
-        val intent = Intent(this, UpdatePlantActivity::class.java)
-        startActivity(intent)
-    }
-
-    private fun deletePlant(plantId: String) {
-        val rootRef = FirebaseDatabase.getInstance().reference
-        rootRef.child("plants").child(plantId).removeValue()
-        Log.d("deleteplantutza", "yes")
     }
 
     private fun initRecyclerView(){
@@ -91,5 +80,10 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
         val intent = Intent(this, AddNewPlantsActivity :: class.java)
         intent.putExtra("plant", plant)
         startActivity(intent)
+    }
+
+    override fun onDataChanged() {
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar);
+        progressBar.visibility = View.GONE
     }
 }

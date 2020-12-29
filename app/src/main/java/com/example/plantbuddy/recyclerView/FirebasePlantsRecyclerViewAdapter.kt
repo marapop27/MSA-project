@@ -1,10 +1,8 @@
 package com.example.plantbuddy.recyclerView
 
 import android.content.DialogInterface
-import android.media.Image
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -19,13 +17,13 @@ import com.example.plantbuddy.model.Plant
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseError
-import kotlinx.android.synthetic.main.blog_list_item.view.*
 
 class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>, val interaction: Interaction) : FirebaseRecyclerAdapter<Plant, FirebasePlantsRecyclerViewAdapter.FirebasePlantsViewHolder>(options) {
     interface Interaction
     {
         fun onDeletePlant(plant:Plant)
         fun onEditPlant(plant:Plant)
+        fun onDataChanged()
     }
 
     class FirebasePlantsViewHolder(itemView: View, val interaction: Interaction) : RecyclerView.ViewHolder(itemView)
@@ -38,7 +36,7 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
         private val  habitat: TextView = itemView.findViewById(R.id.living_habitat_plant_list)
         private val sun: TextView = itemView.findViewById(R.id.sun_exposure_plant_list)
         private val coverImage: ImageView = itemView.findViewById(R.id.iv_plant_list_cover)
-        private val moreMenu: ImageButton = itemView.findViewById(R.id.ibtn_more_menu)
+        private val moreMenu: ImageView = itemView.findViewById(R.id.iv_more_menu)
 
         private lateinit var item:Plant
         private lateinit var dialog: AlertDialog
@@ -119,6 +117,7 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
 
     override fun onDataChanged() {
         super.onDataChanged()
+        interaction.onDataChanged()
     }
 
     override fun onError(error: DatabaseError) {
