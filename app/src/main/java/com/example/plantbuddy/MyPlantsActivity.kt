@@ -9,6 +9,7 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.plantbuddy.core.ReminderManager
 import com.example.plantbuddy.helpers.showErrorSnackbar
 import com.example.plantbuddy.helpers.showMessageSnackbar
 import com.example.plantbuddy.model.Plant
@@ -32,7 +33,7 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
         setContentView(R.layout.activity_my_plants)
 
         progressBar = findViewById(R.id.progressBar);
-        var backButton = findViewById<ImageView>(R.id.btn_toolbar_back);
+        val backButton = findViewById<ImageView>(R.id.btn_toolbar_back);
         backButton.setOnClickListener {
             onBackPressed();
         }
@@ -84,6 +85,10 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
         val intent = Intent(this, AddNewPlantsActivity :: class.java)
         intent.putExtra("plant", plant)
         startActivity(intent)
+    }
+
+    override fun onSetReminder(plant: Plant) {
+        ReminderManager.setAlarmForPlant(this, plant)
     }
 
     override fun onDataChanged() {
