@@ -25,10 +25,13 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
 
+    private lateinit var progressBar: ProgressBar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_plants)
 
+        progressBar = findViewById(R.id.progressBar);
         var backButton = findViewById<ImageView>(R.id.btn_toolbar_back);
         backButton.setOnClickListener {
             onBackPressed();
@@ -39,6 +42,7 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
 
     override fun onResume() {
         super.onResume()
+        progressBar.visibility = View.VISIBLE
         firebasePlantsAdapter.startListening()
     }
 
@@ -83,7 +87,6 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
     }
 
     override fun onDataChanged() {
-        val progressBar = findViewById<ProgressBar>(R.id.progressBar);
         progressBar.visibility = View.GONE
     }
 }
