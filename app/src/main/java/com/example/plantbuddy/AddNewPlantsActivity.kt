@@ -17,11 +17,13 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.example.plantbuddy.helpers.showErrorSnackbar
 import com.example.plantbuddy.model.Plant
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
@@ -33,9 +35,7 @@ import kotlinx.android.synthetic.main.activity_add_new_plants.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -60,6 +60,8 @@ class AddNewPlantsActivity : AppCompatActivity() {
     lateinit var wateringFreq :TextView
     lateinit var envTemp:TextView
     lateinit var plantImage:ImageView
+    lateinit var coordinatorLayout:CoordinatorLayout
+
     var plantBitmap:Bitmap? = null
     var plantImageUrl:String? = null
     lateinit var currentPhotoPath: String
@@ -152,6 +154,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
         doneButton = findViewById(R.id.done_button);
         spinner_habitat = findViewById<Spinner>(R.id.spinner_plant_type)
         spinner_sun = findViewById<Spinner>(R.id.spinner_sun_exposure)
+        coordinatorLayout = findViewById(R.id.coordinatorLayout)
     }
 
     private fun initDefaultTimeIfNeeded()
@@ -338,8 +341,8 @@ class AddNewPlantsActivity : AppCompatActivity() {
                     )
                     Glide.with(this).load(plantBitmap).centerCrop().into(plantImage);
                 } else {
-                    val source = ImageDecoder.createSource(this.contentResolver, uri)
-                    plantBitmap = ImageDecoder.decodeBitmap(source)
+                    val imageStream = contentResolver.openInputStream(uri)
+                    plantBitmap = BitmapFactory.decodeStream(imageStream)
                     Glide.with(this).load(plantBitmap).centerCrop().into(plantImage);
                 }
             }
@@ -410,6 +413,21 @@ class AddNewPlantsActivity : AppCompatActivity() {
 
     private suspend fun addOrUpdatePlantInFirebase()
     {
+        if(plantName.text.isEmpty())
+        {
+            showErrorSnackbar(coordinatorLayout, "Plant name invalid!")
+            return;
+        }
+        if(wateringFreq.text.isEmpty())
+        {
+            showErrorSnackbar(coordinatorLayout, "Watering frequency invalid!")
+            return;
+        }
+        if(envTemp.text.isEmpty())
+        {
+            showErrorSnackbar(coordinatorLayout, "Environment Temperature invalid!")
+            return;
+        }
         val database = FirebaseDatabase.getInstance()
         val reference = database.getReference("plants")
         val storageReference = FirebaseStorage.getInstance().reference

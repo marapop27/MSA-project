@@ -59,6 +59,7 @@
             android:id="@+id/buttonSettings"
             style="@style/PrimaryButton"
             android:text="@string/settings"
+            android:visibility="gone"
             />
 
         <Button

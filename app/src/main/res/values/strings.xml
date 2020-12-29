@@ -10,10 +10,10 @@
     <string name="update_plant">Update Plant</string>
     <string name="plant_name">Plant Name</string>
     <string name="water_frequency">Watering Frequency (DAYS)</string>
-    <string name="default_temp">Default Temperature (Celsius)</string>
+    <string name="default_temp">Environment Temperature (Celsius)</string>
     <string name="text_intro_spinner">Living habitat:</string>
     <string name="text_intro_spinner_sun">Sun exposure level:</string>
-    <string name="text_intro_time">Select the prefered time interval to water your buddy:</string>
+    <string name="text_intro_time">Select the preferred time interval to water your buddy:</string>
     <string name="text_add_plant_intro">Please add your buddy\'s details</string>
     <string name="text_update_plant_intro">Please update your buddy\'s details</string>
     <string name="login">Log in</string>
@@ -22,6 +22,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="register">Register</string>
+    <string name="getting_your_buddy_s">Getting your buddy\'s</string>
     <string-array name="plant_indoor_outdoor">
         <item>Indoor</item>
         <item>Outdoor</item>

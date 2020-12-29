@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -30,8 +29,7 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
     {
         private val name: TextView = itemView.findViewById(R.id.plant_name_plant_list)
         private val wateringFreq: TextView = itemView.findViewById(R.id.watering_freq_plant_list)
-        private val  startTime: TextView = itemView.findViewById(R.id.start_time_plant_list)
-        private val  endTime: TextView = itemView.findViewById(R.id.end_time_plant_list)
+        private val  timeInterval: TextView = itemView.findViewById(R.id.time_plant_list)
         private val temp: TextView = itemView.findViewById(R.id.default_temp_plant_list)
         private val  habitat: TextView = itemView.findViewById(R.id.living_habitat_plant_list)
         private val sun: TextView = itemView.findViewById(R.id.sun_exposure_plant_list)
@@ -62,9 +60,12 @@ class FirebasePlantsRecyclerViewAdapter(options: FirebaseRecyclerOptions<Plant>,
             createMenuDialog()
 
             name.text = item.plantName
-            wateringFreq.text = item.wateringFreq
-            startTime.text = item.startTime
-            endTime.text = item.endTime
+            wateringFreq.text = if(item.wateringFreq == "1")
+                "Every ${item.wateringFreq} day"
+            else
+                "Every ${item.wateringFreq} days"
+
+            timeInterval.text = "Preferred time: ${item.startTime} - ${item.endTime}"
             temp.text = "${item.temperature} \u2103"
             habitat.text = plantTypeList[item.livingHabitat]
             sun.text = sunExposureLevelList[item.sunExposure]
