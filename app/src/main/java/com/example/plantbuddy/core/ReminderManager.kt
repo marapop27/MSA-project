@@ -48,7 +48,10 @@ object ReminderManager {
         alarmMgr?.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            1000 * 60 * (plant.wateringFreq?.toLong() ?: 1),
+            ///3600000 -> 1 hour in millisecons
+            ///24 - > number of hour in 1 day
+            ///3600000 * 24 * (plant.wateringFreq?.toLong() ?: 1) -> 1 day * water frequency days
+            3600000 * 24 * (plant.wateringFreq?.toLong() ?: 1),
             alarmIntent
         )
 
