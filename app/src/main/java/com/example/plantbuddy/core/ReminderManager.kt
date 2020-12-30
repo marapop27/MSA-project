@@ -41,15 +41,14 @@ object ReminderManager {
         }
         val calendar: Calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
-//            set(Calendar.HOUR, plantHour)
-//            set(Calendar.MINUTE, plantMinute)
-            add(Calendar.MINUTE, 1)
+            set(Calendar.HOUR, plantHour)
+            set(Calendar.MINUTE, plantMinute)
         }
 
         alarmMgr?.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            1000 * 30 * 1,
+            1000 * 60 * (plant.wateringFreq?.toLong() ?: 1),
             alarmIntent
         )
 
