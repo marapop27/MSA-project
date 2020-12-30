@@ -6,19 +6,31 @@ import android.content.Context
 import android.content.Intent
 import com.example.plantbuddy.model.Plant
 import com.example.plantbuddy.receivers.ReminderReceiver
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.database.FirebaseDatabase
+import java.time.Duration
 import java.util.*
 
 object ReminderManager {
 
-    fun setAlarmForPlant(context: Context, plant: Plant): Boolean
+    var database = FirebaseDatabase.getInstance()
+    val reference = database.getReference("plants")
+
+    fun setAlarmForPlant(context: Context, plant: Plant, alarmId:Int=-1): Boolean
     {
-        val alarmId = (0..9999).random()
+        var alarmAuxId = (0..9999).random()
+        if(alarmId != -1)
+        {
+            alarmAuxId = alarmId
+        }
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmIntent = Intent(context, ReminderReceiver::class.java).let { intent ->
+            intent.putExtra("plantId", plant.plantId)
             intent.putExtra("name", plant.plantName)
             intent.putExtra("url", plant.imageUrl)
-            intent.putExtra("alarmId", alarmId)
-            PendingIntent.getBroadcast(context, alarmId, intent, 0)
+            intent.putExtra("freq", plant.wateringFreq)
+            PendingIntent.getBroadcast(context, alarmAuxId, intent, 0)
         }
 
         val plantMinute = plant.startTime?.substring(3, 5)?.toInt()
@@ -34,18 +46,18 @@ object ReminderManager {
             add(Calendar.MINUTE, 1)
         }
 
-        alarmMgr?.setInexactRepeating(
+        alarmMgr?.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            1000 * 60 * 2,
+            1000 * 30 * 1,
             alarmIntent
         )
 
-        //Alarms was set with success
+        reference.child(plant.plantId!!).child("alarmId").setValue(alarmAuxId)
         return true
     }
 
-    fun cancelAlarm(context: Context, alarmId:Int)
+    fun cancelAlarm(context: Context, plantId: String?, alarmId: Int)
     {
         val alarmIntent: PendingIntent = PendingIntent.getBroadcast(
             context, alarmId,
@@ -55,5 +67,6 @@ object ReminderManager {
 
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmMgr.cancel(alarmIntent)
+        reference.child(plantId!!).child("alarmId").setValue(-1)
     }
 }

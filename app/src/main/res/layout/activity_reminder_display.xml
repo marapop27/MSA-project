@@ -1,54 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/coordinatorLayout"
     tools:context=".ReminderDisplayActivity">
-    <ImageView
-        android:id="@+id/cover_photo"
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"/>
-    <TextView
-        android:id="@+id/tv_plant_buddy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
-        android:textSize="26sp"
-        android:text="@string/your_buddy"
-        android:layout_above="@id/tv_plant_name"
-        android:layout_margin="20dp"
-        android:textAlignment="center"
-        android:textStyle="bold"/>
-    <TextView
-        android:id="@+id/tv_plant_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
-        android:textSize="32sp"
-        android:layout_centerInParent="true"
-        android:text="asdasda"
-        android:layout_margin="20dp"
-        android:textAlignment="center"
-        android:textStyle="bold"/>
-    <TextView
-        android:id="@+id/tv_plant_wattered"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
-        android:textSize="26sp"
-        android:text="@string/needs_to_be_watered"
-        android:layout_below="@id/tv_plant_name"
-        android:layout_margin="20dp"
-        android:textAlignment="center"
-        android:textStyle="bold"/>
-    <Button
-        android:id="@+id/btn_water_plant"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="I'l water you"
-        android:background="@color/colorPrimaryDark"
-        android:layout_margin="20dp"
-        />
-</RelativeLayout>
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/cover_photo"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
+        <TextView
+            android:id="@+id/tv_plant_buddy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/tv_plant_name"
+            android:layout_margin="20dp"
+            android:text="@string/your_buddy"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_plant_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="20dp"
+            android:text="asdasda"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_plant_wattered"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_plant_name"
+            android:layout_margin="20dp"
+            android:text="@string/needs_to_be_watered"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_water_plant"
+            style="@style/PrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="20dp"
+            android:text="I'l water you" />
+    </RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -259,7 +259,8 @@ class AddNewPlantsActivity : AppCompatActivity() {
             sunExposureLevel,
             startTime,
             endTime,
-            plantImageUrl
+            plantImageUrl,
+            -1
         )
 
         if (plantId != null) {

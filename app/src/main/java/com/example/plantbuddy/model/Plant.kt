@@ -16,6 +16,7 @@ class Plant() : Parcelable
     var startTime: String? = null
     var endTime: String? = null
     var imageUrl: String? = null
+    var alarmId: Int = -1
 
     constructor(parcel: Parcel) : this() {
         userId = parcel.readString()
@@ -29,6 +30,7 @@ class Plant() : Parcelable
         startTime = parcel.readString()
         endTime = parcel.readString()
         imageUrl = parcel.readString()
+        alarmId = parcel.readInt()
     }
 
 
@@ -43,7 +45,8 @@ class Plant() : Parcelable
         sunExposure: Int,
         startTime: String?,
         endTime: String?,
-        imageUrl: String?) : this()
+        imageUrl: String?,
+        alarmId:Int) : this()
     {
         this.userId= userId
         this.plantId= plantId
@@ -56,6 +59,7 @@ class Plant() : Parcelable
         this.startTime=startTime
         this.endTime=endTime
         this.imageUrl = imageUrl
+        this.alarmId = alarmId
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -70,6 +74,7 @@ class Plant() : Parcelable
         parcel.writeString(startTime)
         parcel.writeString(endTime)
         parcel.writeString(imageUrl)
+        parcel.writeInt(alarmId)
     }
 
     override fun describeContents(): Int {

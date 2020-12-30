@@ -1,8 +1,11 @@
 package com.example.plantbuddy
 
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -10,14 +13,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.plantbuddy.core.ReminderManager
-import com.example.plantbuddy.helpers.showErrorSnackbar
 import com.example.plantbuddy.helpers.showMessageSnackbar
 import com.example.plantbuddy.model.Plant
 import com.example.plantbuddy.recyclerView.FirebasePlantsRecyclerViewAdapter
 import com.example.plantbuddy.recyclerView.TopSpacingItemDecoration
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_my_plants.*
 
 class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.Interaction {
@@ -45,6 +48,8 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
         super.onResume()
         progressBar.visibility = View.VISIBLE
         firebasePlantsAdapter.startListening()
+
+
     }
 
     override fun onPause() {
@@ -89,6 +94,7 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
 
     override fun onSetReminder(plant: Plant) {
         ReminderManager.setAlarmForPlant(this, plant)
+        showMessageSnackbar(coordinatorLayout, "Reminder was set!")
     }
 
     override fun onDataChanged() {
