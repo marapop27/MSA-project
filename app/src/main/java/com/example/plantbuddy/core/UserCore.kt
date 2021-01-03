@@ -1,8 +1,5 @@
 package com.example.plantbuddy.core
 
-import android.content.Intent
-import androidx.core.content.ContextCompat.startActivity
-import com.example.plantbuddy.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -15,7 +12,9 @@ object UserCore {
     }
 
     fun checkIfLoggedIn():Boolean {
-        return user != null;
+        auth = FirebaseAuth.getInstance()
+        user = auth.currentUser
+        return user != null
     }
 
     fun signOut()
