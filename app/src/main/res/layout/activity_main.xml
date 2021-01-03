@@ -78,7 +78,7 @@
         <Button
             android:id="@+id/buttonLogoutMain"
             android:visibility="visible"
-            style="@style/PrimaryButton"
+            style="@style/LogOutButton"
             android:text="@string/log_out_btn"
             />
 
