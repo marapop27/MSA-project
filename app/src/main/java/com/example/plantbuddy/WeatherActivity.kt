@@ -1,5 +1,10 @@
 package com.example.plantbuddy
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.AsyncTask
@@ -7,19 +12,72 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
 import org.json.JSONObject
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 
 class WeatherActivity : AppCompatActivity() {
     val CITY: String = "arad,ro"
     val API: String = "01dbe6b2ff6783f0d5e2560e68b50541"
+    private var fusedLocationClient: FusedLocationProviderClient? = null
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
+    var gps_loc: Location? = null
+    var network_loc: Location? = null
+    var final_loc: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        val locationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_NETWORK_STATE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        try {
+            gps_loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            network_loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        if (gps_loc != null) {
+            final_loc = gps_loc
+            latitude = final_loc!!.latitude
+            longitude = final_loc!!.longitude
+        } else if (network_loc != null) {
+            final_loc = network_loc
+            latitude = final_loc!!.latitude
+            longitude = final_loc!!.longitude
+        } else {
+            latitude = 0.0
+            longitude = 0.0
+        }
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_NETWORK_STATE
+            ),
+            1
+        )
 
         weatherTask().execute()
 
@@ -28,7 +86,6 @@ class WeatherActivity : AppCompatActivity() {
     inner class weatherTask() : AsyncTask<String, Void, String>() {
         override fun onPreExecute() {
             super.onPreExecute()
-            /* Showing the ProgressBar, Making the main design GONE */
             findViewById<ProgressBar>(R.id.loader).visibility = View.VISIBLE
             findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.GONE
             findViewById<TextView>(R.id.errorText).visibility = View.GONE
@@ -37,8 +94,9 @@ class WeatherActivity : AppCompatActivity() {
         override fun doInBackground(vararg params: String?): String? {
             var response:String?
             try{
-                response = URL("https://api.openweathermap.org/data/2.5/weather?q=$CITY&units=metric&appid=$API").readText(
-                    Charsets.UTF_8
+//                response = URL("https://api.openweathermap.org/data/2.5/weather?q=$CITY&units=metric&appid=$API").readText(       //for emulator testing
+                response = URL("https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&units=metric&appid=$API").readText(
+                        Charsets.UTF_8
                 )
             }catch (e: Exception){
                 response = null
@@ -49,7 +107,6 @@ class WeatherActivity : AppCompatActivity() {
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
             try {
-                /* Extracting JSON returns from the API */
                 val jsonObj = JSONObject(result)
                 val main = jsonObj.getJSONObject("main")
                 val sys = jsonObj.getJSONObject("sys")
@@ -71,7 +128,6 @@ class WeatherActivity : AppCompatActivity() {
 
                 val address = jsonObj.getString("name")+", "+sys.getString("country")
 
-                /* Populating extracted data into our views */
                 findViewById<TextView>(R.id.address).text = address
                 findViewById<TextView>(R.id.updated_at).text =  updatedAtText
                 findViewById<TextView>(R.id.status).text = weatherDescription.capitalize()
@@ -84,7 +140,6 @@ class WeatherActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.pressure).text = pressure
                 findViewById<TextView>(R.id.humidity).text = humidity
 
-                /* Views populated, Hiding the loader, Showing the main design */
                 findViewById<ProgressBar>(R.id.loader).visibility = View.GONE
                 findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
 

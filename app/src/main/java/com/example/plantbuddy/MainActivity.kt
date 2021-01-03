@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var seeRemindersButton: Button
     lateinit var settingsButton: Button
     lateinit var weatherButton: Button
+    lateinit var locationButton: Button
     lateinit var logoutButton: Button
     lateinit var username: TextView
 
@@ -60,6 +61,11 @@ class MainActivity : AppCompatActivity() {
 
         weatherButton.setOnClickListener {
             val intent = Intent(this, WeatherActivity::class.java)
+            startActivity(intent)
+        }
+
+        locationButton.setOnClickListener {
+            val intent = Intent(this, LocationActivity::class.java)
             startActivity(intent)
         }
 
@@ -98,6 +104,7 @@ class MainActivity : AppCompatActivity() {
         seeRemindersButton = findViewById(R.id.buttonSeeReminders)
         settingsButton = findViewById(R.id.buttonSettings)
         weatherButton = findViewById(R.id.buttonWeather)
+        locationButton = findViewById(R.id.buttonLocation)
         logoutButton = findViewById(R.id.buttonLogoutMain)
         username = findViewById(R.id.userView)
     }
