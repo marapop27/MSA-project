@@ -1,26 +1,13 @@
 package com.example.plantbuddy
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.example.plantbuddy.core.UserCore
-import com.example.plantbuddy.receivers.ReminderReceiver
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.ktx.Firebase
-import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -92,9 +79,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUsername() {
         if(UserCore.checkIfLoggedIn())
-            username.text=UserCore.user?.email;
+            username.text = UserCore.user?.email
         else
-            username.text="not logged in"
+            username.text = "not logged in"
     }
 
     private fun initializeViews()

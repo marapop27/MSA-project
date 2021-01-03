@@ -5,16 +5,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.plantbuddy.core.ReminderManager
 import com.example.plantbuddy.model.Plant
 import com.example.plantbuddy.recyclerView.RemindersRecyclerViewAdapter
 import com.example.plantbuddy.recyclerView.TopSpacingItemDecoration
-import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_my_plants.*
 
 class SeeRemindersActivity : AppCompatActivity(), RemindersRecyclerViewAdapter.Interaction {
