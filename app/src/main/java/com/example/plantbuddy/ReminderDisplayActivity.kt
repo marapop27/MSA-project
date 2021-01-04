@@ -40,6 +40,7 @@ class ReminderDisplayActivity : AppCompatActivity() {
             window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reminder_display)
 

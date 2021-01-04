@@ -5,21 +5,17 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.plantbuddy.core.ReminderManager
+import com.example.plantbuddy.core.UserCore
 import com.example.plantbuddy.model.Plant
 import com.example.plantbuddy.recyclerView.RemindersRecyclerViewAdapter
 import com.example.plantbuddy.recyclerView.TopSpacingItemDecoration
-import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_my_plants.*
 
 class SeeRemindersActivity : AppCompatActivity(), RemindersRecyclerViewAdapter.Interaction {
-    private lateinit var firebasePlantsAdapter: RemindersRecyclerViewAdapter
-    private lateinit var auth: FirebaseAuth
+    private lateinit var reminderAdapter: RemindersRecyclerViewAdapter
     private lateinit var progressBarContainer: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,18 +37,16 @@ class SeeRemindersActivity : AppCompatActivity(), RemindersRecyclerViewAdapter.I
     }
 
     private fun initRecyclerView(){
-        firebasePlantsAdapter = RemindersRecyclerViewAdapter(this)
+        reminderAdapter = RemindersRecyclerViewAdapter(this)
         recycler_view.apply {
             layoutManager = LinearLayoutManager(this@SeeRemindersActivity)
             val topSpacingDecoration = TopSpacingItemDecoration(30)
             addItemDecoration(topSpacingDecoration)
-            adapter = firebasePlantsAdapter
+            adapter = reminderAdapter
         }
 
-        auth = FirebaseAuth.getInstance()
-        val currentUser = auth.currentUser
         val rootRef = FirebaseDatabase.getInstance().reference
-        rootRef.child("plants").orderByChild("userId").equalTo(currentUser?.uid)
+        rootRef.child("plants").orderByChild("userId").equalTo(UserCore.user?.uid)
             .addValueEventListener(object : ValueEventListener{
                 override fun onCancelled(error: DatabaseError) {
 
@@ -69,8 +63,8 @@ class SeeRemindersActivity : AppCompatActivity(), RemindersRecyclerViewAdapter.I
                         plantList.add(plant)
                     }
 
-                    firebasePlantsAdapter.itemList = plantList
-                    firebasePlantsAdapter.notifyDataSetChanged()
+                    reminderAdapter.itemList = plantList
+                    reminderAdapter.notifyDataSetChanged()
                     progressBarContainer.visibility = View.GONE
                 }
             })

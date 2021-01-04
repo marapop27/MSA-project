@@ -1,14 +1,10 @@
 package com.example.plantbuddy
 
-import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.View
 import android.widget.ImageView
-import android.widget.ProgressBar
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,13 +25,13 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
 
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBarContainer: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_plants)
 
-        progressBar = findViewById(R.id.progressBar);
+        progressBarContainer = findViewById(R.id.progress_bar_container);
         val backButton = findViewById<ImageView>(R.id.btn_toolbar_back);
         backButton.setOnClickListener {
             onBackPressed();
@@ -46,10 +42,8 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
 
     override fun onResume() {
         super.onResume()
-        progressBar.visibility = View.VISIBLE
+        progressBarContainer.visibility = View.VISIBLE
         firebasePlantsAdapter.startListening()
-
-
     }
 
     override fun onPause() {
@@ -98,6 +92,6 @@ class MyPlantsActivity : AppCompatActivity(), FirebasePlantsRecyclerViewAdapter.
     }
 
     override fun onDataChanged() {
-        progressBar.visibility = View.GONE
+        progressBarContainer.visibility = View.GONE
     }
 }
