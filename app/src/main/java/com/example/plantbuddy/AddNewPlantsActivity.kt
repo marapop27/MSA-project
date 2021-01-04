@@ -178,7 +178,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
         Glide.with(this).load(plant.imageUrl).centerCrop().into(plantImage);
         plantName.text = plant.plantName
         wateringFreq.text = plant.wateringFreq
-        envTemp.text = plant.wateringFreq
+        envTemp.text = plant.temperature
         spinner_habitat.setSelection(plant.livingHabitat)
         plantImageUrl = plant.imageUrl
 
