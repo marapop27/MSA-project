@@ -1,26 +1,13 @@
 package com.example.plantbuddy
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import com.example.plantbuddy.core.UserCore
-import com.example.plantbuddy.receivers.ReminderReceiver
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.ktx.Firebase
-import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var seeRemindersButton: Button
     lateinit var settingsButton: Button
     lateinit var weatherButton: Button
+    lateinit var locationButton: Button
     lateinit var logoutButton: Button
     lateinit var username: TextView
 
@@ -63,6 +51,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        locationButton.setOnClickListener {
+            val intent = Intent(this, LocationActivity::class.java)
+            startActivity(intent)
+        }
+
         logoutButton.setOnClickListener{
             signOut()
         }
@@ -86,9 +79,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUsername() {
         if(UserCore.checkIfLoggedIn())
-            username.text=UserCore.user?.email;
+            username.text = UserCore.user?.email
         else
-            username.text="not logged in"
+            username.text = "not logged in"
     }
 
     private fun initializeViews()
@@ -98,6 +91,7 @@ class MainActivity : AppCompatActivity() {
         seeRemindersButton = findViewById(R.id.buttonSeeReminders)
         settingsButton = findViewById(R.id.buttonSettings)
         weatherButton = findViewById(R.id.buttonWeather)
+        locationButton = findViewById(R.id.buttonLocation)
         logoutButton = findViewById(R.id.buttonLogoutMain)
         username = findViewById(R.id.userView)
     }

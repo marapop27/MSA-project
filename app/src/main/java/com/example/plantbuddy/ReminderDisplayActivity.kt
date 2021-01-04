@@ -10,11 +10,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.example.plantbuddy.core.ReminderManager
-import com.example.plantbuddy.helpers.showMessageSnackbar
-import kotlinx.android.synthetic.main.activity_reminder_display.*
 
 
 class ReminderDisplayActivity : AppCompatActivity() {

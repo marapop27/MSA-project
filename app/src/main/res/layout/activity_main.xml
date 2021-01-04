@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:fontFamily="casual"
-            android:text="not logged in"
+            android:text="@string/not_logged_in_tv"
             android:textColor="@color/colorPrimary"
             android:gravity="center"
             android:autoSizeTextType="uniform"
@@ -69,10 +69,17 @@
             />
 
         <Button
+            android:id="@+id/buttonLocation"
+            style="@style/PrimaryButton"
+            android:text="@string/location"
+            android:visibility="gone"
+            />
+
+        <Button
             android:id="@+id/buttonLogoutMain"
             android:visibility="visible"
-            style="@style/PrimaryButton"
-            android:text="log out"
+            style="@style/LogOutButton"
+            android:text="@string/log_out_btn"
             />
 
     </LinearLayout>

@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -179,7 +178,7 @@ class AddNewPlantsActivity : AppCompatActivity() {
         Glide.with(this).load(plant.imageUrl).centerCrop().into(plantImage);
         plantName.text = plant.plantName
         wateringFreq.text = plant.wateringFreq
-        envTemp.text = plant.wateringFreq
+        envTemp.text = plant.temperature
         spinner_habitat.setSelection(plant.livingHabitat)
         plantImageUrl = plant.imageUrl
 

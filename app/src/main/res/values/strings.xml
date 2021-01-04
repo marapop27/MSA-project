@@ -27,6 +27,14 @@
     <string name="getWeather">Weather</string>
     <string name="needs_to_be_watered">needs to be watered</string>
     <string name="your_buddy">Your buddy</string>
+    <string name="latitudeBabel">Latitude</string>
+    <string name="longitudeBabel">Longitude</string>
+    <string name="location">Location</string>
+    <string name="lon">lon</string>
+    <string name="lat">lat</string>
+    <string name="LocationTitle">Current Location in Latitude and Longitude:</string>
+    <string name="log_out_btn">Log Out</string>
+    <string name="not_logged_in_tv">not logged in</string>
     <string-array name="plant_indoor_outdoor">
         <item>Indoor</item>
         <item>Outdoor</item>

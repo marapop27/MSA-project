@@ -8,4 +8,5 @@
     <color name="grey_100">#F5F5F5</color>
     <color name="primary_resources">#000</color>
     <color name="button_text">#000</color>
+    <color name="colorLogout">#E84949</color>
 </resources>

@@ -11,6 +11,7 @@ import com.example.plantbuddy.core.UserCore
 import com.example.plantbuddy.model.Plant
 import com.example.plantbuddy.recyclerView.RemindersRecyclerViewAdapter
 import com.example.plantbuddy.recyclerView.TopSpacingItemDecoration
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_my_plants.*
 
