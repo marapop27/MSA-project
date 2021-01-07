@@ -27,7 +27,7 @@ class SignupActivity : AppCompatActivity() {
         password_text = findViewById(R.id.edit_password)
 
         signup_button.setOnClickListener{
-            createAccount(email_text.getText().toString().trim(), password_text.getText().toString().trim())
+            createAccount(email_text.text.toString().trim(), password_text.text.toString().trim())
 
         }
         setToolbar()
@@ -36,14 +36,14 @@ class SignupActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser: FirebaseUser? = auth.getCurrentUser()
+        val currentUser: FirebaseUser? = auth.currentUser
     }
 
     private fun setToolbar()
     {
-        val backButton = findViewById<ImageView>(R.id.btn_toolbar_back);
+        val backButton = findViewById<ImageView>(R.id.btn_toolbar_back)
         backButton.setOnClickListener {
-            onBackPressed();
+            onBackPressed()
         }
 
         val title = findViewById<TextView>(R.id.tv_toolbar_title)

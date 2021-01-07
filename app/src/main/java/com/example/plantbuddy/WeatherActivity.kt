@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.AsyncTask
 import android.view.View
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -32,8 +33,15 @@ class WeatherActivity : AppCompatActivity() {
     var final_loc: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
+
+        val backButton = findViewById<ImageView>(R.id.btn_toolbar_back);
+        backButton.setOnClickListener {
+            onBackPressed();
+        }
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val locationManager =
